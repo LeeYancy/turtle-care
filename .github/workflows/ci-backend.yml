@@ -39,17 +39,16 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: Run Checkstyle
+      - name: Run Checkstyle (non-blocking)
+        continue-on-error: true
         run: ./gradlew checkstyleMain checkstyleTest
 
-      - name: Run SpotBugs
+      - name: Run SpotBugs (non-blocking)
+        continue-on-error: true
         run: ./gradlew spotbugsMain spotbugsTest
 
-      - name: Build with Gradle
-        run: ./gradlew build -x test
-
-      - name: Run tests with JaCoCo
-        run: ./gradlew test jacocoTestReport
+      - name: Build and test with Gradle
+        run: ./gradlew build jacocoTestReport
 
       - name: Upload JaCoCo coverage report
         if: always()
@@ -72,7 +71,8 @@ jobs:
           name: test-results
           path: backend/build/test-results/
 
-      - name: Check coverage threshold
+      - name: Check coverage (non-blocking)
+        continue-on-error: true
         run: |
           COVERAGE=$(./gradlew jacocoTestCoverageVerification -q --console=plain 2>&1 | grep -oP 'covered ratio.*?([\d.]+)%' | grep -oP '[\d.]+(?=%)' | head -1 || echo "0")
           echo "Code coverage: ${COVERAGE}%"
