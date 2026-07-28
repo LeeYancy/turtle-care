@@ -51,4 +51,13 @@ public class TurtleController {
         Long userId = (Long) auth.getPrincipal();
         return ApiResponse.ok(turtleService.update(userId, turtleId, request));
     }
+
+    @Operation(summary = "删除（归档）龟档案", description = "软删除指定龟档案，V1.0仅支持归档当前活跃龟")
+    @DeleteMapping("/{turtleId}")
+    public ApiResponse<Void> delete(Authentication auth,
+                                     @PathVariable Long turtleId) {
+        Long userId = (Long) auth.getPrincipal();
+        turtleService.delete(userId, turtleId);
+        return ApiResponse.ok();
+    }
 }

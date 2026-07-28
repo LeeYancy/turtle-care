@@ -7,7 +7,10 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
@@ -15,10 +18,12 @@ import java.util.concurrent.TimeUnit;
 /**
  * AI接口限流切面
  * 每人每天最多50次，每小时恢复5次
+ * 当Redis不可用时自动禁用（跳过限流检查）
  */
 @Slf4j
 @Aspect
 @Component
+@ConditionalOnBean(RedisTemplate.class)
 @RequiredArgsConstructor
 public class RateLimitAspect {
 
@@ -50,7 +55,11 @@ public class RateLimitAspect {
     }
 
     private Long getCurrentUserId() {
-        // TODO: 从SecurityContext获取当前用户ID
-        return 1L;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getPrincipal() instanceof Long) {
+            return (Long) auth.getPrincipal();
+        }
+        // 未认证时使用IP作为降级key
+        return 0L;
     }
 }

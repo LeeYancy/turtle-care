@@ -25,14 +25,12 @@ spring:
     baseline-on-migrate: true
     locations: classpath:db/migration,classpath:db/testdata
 
-  # 开发环境禁用Redis（使用本地缓存替代）
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
-
-  # SQL 日志（开发调试）
-  jpa:
-    show-sql: false
+  # 开发环境：保持Redis自动配置但对连接失败容错
+  # RateLimitAspect 在无Redis时自动禁用
+  data:
+    redis:
+      timeout: 1000ms
+      connect-timeout: 1000ms
 
 # MyBatis Plus - 开发环境打印SQL
 mybatis-plus:

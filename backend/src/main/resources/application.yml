@@ -43,12 +43,12 @@ mybatis-plus:
 
 # JWT
 jwt:
-  secret: ${JWT_SECRET:change-me-in-production}
+  secret: ${JWT_SECRET:please-change-this-default-secret-key-now}
   expiration: 604800000  # 7 days
 
 # AI / LLM
 llm:
-  provider: ${LLM_PROVIDER:openai}  # openai | anthropic
+  provider: ${LLM_PROVIDER:mock}  # mock | openai | anthropic
   openai:
     api-key: ${OPENAI_API_KEY:}
     model: gpt-4o-mini

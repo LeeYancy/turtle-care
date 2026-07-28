@@ -3,6 +3,7 @@ package com.turtlecare.module.ai.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.turtlecare.common.aspect.RateLimited;
+import com.turtlecare.common.exception.BusinessException;
 import com.turtlecare.module.ai.dto.HealthAnalysisRequest;
 import com.turtlecare.module.ai.dto.HealthAnalysisResponse;
 import com.turtlecare.module.ai.dto.ChatRequest;
@@ -150,6 +151,11 @@ public class AIService {
      * 获取健康分析历史
      */
     public List<HealthRecord> getHistory(Long userId, Long turtleId) {
+        // 权限校验：验证龟属于当前用户
+        Turtle turtle = turtleMapper.selectById(turtleId);
+        if (turtle == null || !turtle.getUserId().equals(userId)) {
+            throw BusinessException.forbidden("无权访问该龟的健康记录");
+        }
         return healthRecordMapper.findRecentByTurtleId(turtleId, 20);
     }
 

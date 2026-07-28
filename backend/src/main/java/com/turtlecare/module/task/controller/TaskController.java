@@ -19,6 +19,13 @@ public class TaskController {
 
     private final TaskService taskService;
 
+    @Operation(summary = "获取全部任务", description = "获取当前登录用户的所有养龟任务列表")
+    @GetMapping
+    public ApiResponse<List<TaskResponse>> getAll(Authentication auth) {
+        Long userId = (Long) auth.getPrincipal();
+        return ApiResponse.ok(taskService.getAll(userId));
+    }
+
     @Operation(summary = "获取今日任务", description = "获取当前登录用户的今日养龟任务列表")
     @GetMapping("/today")
     public ApiResponse<List<TaskResponse>> getToday(Authentication auth) {
