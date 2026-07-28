@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- AI聊天消息数据映射 -->
+<mapper namespace="com.turtlecare.module.ai.repository.ChatMessageMapper">
+
+    <!-- 结果映射：与 tc_chat_message 表字段一一对应 -->
+    <resultMap id="BaseResultMap" type="com.turtlecare.module.ai.model.ChatMessage">
+        <id     column="id"          property="id" />
+        <result column="user_id"     property="userId" />
+        <result column="turtle_id"   property="turtleId" />
+        <result column="role"        property="role" />
+        <result column="content"     property="content" />
+        <result column="model"       property="model" />
+        <result column="latency_ms"  property="latencyMs" />
+        <result column="created_at"  property="createdAt" />
+    </resultMap>
+
+    <!-- 查询用户与指定龟的最近对话历史 -->
+    <select id="findRecentByUserIdAndTurtleId" resultMap="BaseResultMap">
+        SELECT * FROM tc_chat_message
+        WHERE user_id = #{userId}
+          AND turtle_id = #{turtleId}
+        ORDER BY created_at DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- 查询用户的最近对话历史（不限龟） -->
+    <select id="findRecentByUserId" resultMap="BaseResultMap">
+        SELECT * FROM tc_chat_message
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC
+        LIMIT #{limit}
+    </select>
+
+</mapper>

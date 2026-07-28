@@ -1,0 +1,53 @@
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# Java
+target/
+*.class
+*.jar
+*.war
+!gradle/wrapper/gradle-wrapper.jar
+
+# Flutter/Dart
+.dart_tool/
+.packages
+build/
+*.lock
+
+# OS
+.DS_Store
+Thumbs.db
+*.log
+
+# Environment
+.env
+.env.local
+.env.staging
+.env.production
+*.env
+
+# Uploads
+uploads/
+
+# Backups
+backups/
+*.sql.gz
+
+# Gradle
+.gradle/
+gradle-app.setting
+!gradle/wrapper/gradle-wrapper.jar
+
+# Docker
+docker/nginx/ssl/
+
+# Coverage
+coverage/
+*.exec
+
+# Reports
+backend/build/reports/

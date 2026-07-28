@@ -1,0 +1,143 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.5'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'checkstyle'
+    id 'com.github.spotbugs' version '6.0.18'
+    id 'jacoco'
+}
+
+group = 'com.turtlecare'
+version = '1.0.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+}
+
+// ===== Checkstyle =====
+checkstyle {
+    toolVersion = '10.16.0'
+    configFile = file('config/checkstyle/checkstyle.xml')
+    maxErrors = 0
+    maxWarnings = 100
+}
+
+// ===== SpotBugs =====
+spotbugs {
+    toolVersion = '4.8.6'
+    excludeFilter = file('config/spotbugs/spotbugs-exclude.xml')
+    effort = 'max'
+    reportLevel = 'medium'
+}
+
+spotbugsMain {
+    reports {
+        html {
+            required = true
+            outputLocation = file("$buildDir/reports/spotbugs/main/spotbugs.html")
+        }
+        xml {
+            required = false
+        }
+    }
+}
+
+spotbugsTest {
+    reports {
+        html {
+            required = true
+            outputLocation = file("$buildDir/reports/spotbugs/test/spotbugs.html")
+        }
+    }
+}
+
+// ===== JaCoCo =====
+jacoco {
+    toolVersion = '0.8.12'
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+        csv.required = false
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.60
+            }
+        }
+        rule {
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.50
+            }
+        }
+    }
+}
+
+// Make check run quality gates + tests
+check.dependsOn jacocoTestCoverageVerification
+check.dependsOn jacocoTestReport
+
+dependencies {
+    // Spring Boot Starters
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // MyBatis Plus
+    implementation 'com.baomidou:mybatis-plus-spring-boot3-starter:3.5.7'
+
+    // PostgreSQL
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // Flyway (DB Migration)
+    implementation 'org.flywaydb:flyway-core'
+
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
+
+    // Redis + Rate Limiting
+    implementation 'com.github.vladimir-bukhtoyarov:bucket4j-core:8.6.0'
+
+    // OSS (Aliyun)
+    implementation 'com.aliyun.oss:aliyun-sdk-oss:3.17.4'
+
+    // Springdoc OpenAPI (Swagger UI)
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'com.h2database:h2'
+
+    // SpotBugs annotations
+    spotbugsAnnotations 'com.github.spotbugs:spotbugs-annotations:4.8.6'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}

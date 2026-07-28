@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 养龟任务数据映射 -->
+<mapper namespace="com.turtlecare.module.task.repository.TaskMapper">
+
+    <!-- 结果映射：与 tc_task 表字段一一对应 -->
+    <resultMap id="BaseResultMap" type="com.turtlecare.module.task.model.Task">
+        <id     column="id"             property="id" />
+        <result column="user_id"        property="userId" />
+        <result column="turtle_id"      property="turtleId" />
+        <result column="title"          property="title" />
+        <result column="description"    property="description" />
+        <result column="category"       property="category" />
+        <result column="frequency"      property="frequency" />
+        <result column="is_completed"   property="isCompleted" />
+        <result column="scheduled_date" property="scheduledDate" />
+        <result column="completed_at"   property="completedAt" />
+        <result column="created_at"     property="createdAt" />
+    </resultMap>
+
+    <!-- 查询用户指定日期的任务 -->
+    <select id="findByUserIdAndDate" resultMap="BaseResultMap">
+        SELECT * FROM tc_task
+        WHERE user_id = #{userId}
+          AND scheduled_date = #{date}
+        ORDER BY is_completed ASC, created_at DESC
+    </select>
+
+    <!-- 查询用户指定日期范围内的任务 -->
+    <select id="findByUserIdAndDateRange" resultMap="BaseResultMap">
+        SELECT * FROM tc_task
+        WHERE user_id = #{userId}
+          AND scheduled_date >= #{start}
+          AND scheduled_date &lt;= #{end}
+        ORDER BY scheduled_date, is_completed ASC
+    </select>
+
+    <!-- 查询用户的所有任务（按日期倒序） -->
+    <select id="findByUserId" resultMap="BaseResultMap">
+        SELECT * FROM tc_task
+        WHERE user_id = #{userId}
+        ORDER BY scheduled_date DESC, is_completed ASC
+    </select>
+
+    <!-- 统计龟的任务数量 -->
+    <select id="countByTurtleId" resultType="int">
+        SELECT COUNT(*) FROM tc_task
+        WHERE turtle_id = #{turtleId}
+    </select>
+
+</mapper>

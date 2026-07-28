@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 龟档案数据映射 -->
+<mapper namespace="com.turtlecare.module.turtle.repository.TurtleMapper">
+
+    <!-- 结果映射：与 tc_turtle 表字段一一对应 -->
+    <resultMap id="BaseResultMap" type="com.turtlecare.module.turtle.model.Turtle">
+        <id     column="id"           property="id" />
+        <result column="user_id"      property="userId" />
+        <result column="name"         property="name" />
+        <result column="species"      property="species" />
+        <result column="species_cn"   property="speciesCn" />
+        <result column="gender"       property="gender" />
+        <result column="weight"       property="weight" />
+        <result column="shell_length" property="shellLength" />
+        <result column="birth_date"   property="birthDate" />
+        <result column="photo_url"    property="photoUrl" />
+        <result column="habitat"      property="habitat" />
+        <result column="notes"        property="notes" />
+        <result column="is_active"    property="isActive" />
+        <result column="created_at"   property="createdAt" />
+        <result column="updated_at"   property="updatedAt" />
+    </resultMap>
+
+    <!-- 查询用户的所有活跃龟 -->
+    <select id="findActiveByUserId" resultMap="BaseResultMap">
+        SELECT * FROM tc_turtle
+        WHERE user_id = #{userId}
+          AND is_active = TRUE
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 软删除：将龟标记为非活跃 -->
+    <update id="softDelete">
+        UPDATE tc_turtle
+        SET is_active = FALSE,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+          AND user_id = #{userId}
+          AND is_active = TRUE
+    </update>
+
+</mapper>

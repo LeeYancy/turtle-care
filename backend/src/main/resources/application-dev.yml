@@ -1,0 +1,66 @@
+# ==========================================
+# 开发环境配置 - 使用 H2 内存数据库
+# 启动方式: --spring.profiles.active=dev
+# ==========================================
+
+spring:
+  # H2 内存数据库
+  datasource:
+    url: jdbc:h2:mem:turtlecare;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+    hikari:
+      maximum-pool-size: 5
+
+  # H2 控制台（开发调试用）
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  # Flyway 使用 H2 兼容的迁移脚本
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration,classpath:db/testdata
+
+  # 开发环境禁用Redis（使用本地缓存替代）
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+
+  # SQL 日志（开发调试）
+  jpa:
+    show-sql: false
+
+# MyBatis Plus - 开发环境打印SQL
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# JWT - 开发环境使用简单密钥
+jwt:
+  secret: dev-secret-key-for-local-development-only
+  expiration: 604800000
+
+# LLM - 开发环境使用 Mock
+llm:
+  provider: mock
+
+# OSS - 开发环境使用本地文件系统（暂不实现）
+oss:
+  provider: local
+
+# 开发环境关闭限流
+rate-limit:
+  ai:
+    capacity: 9999
+    refill-rate: 9999
+
+# 日志级别
+logging:
+  level:
+    com.turtlecare: DEBUG
+    org.mybatis: DEBUG
+    org.springframework.security: DEBUG
